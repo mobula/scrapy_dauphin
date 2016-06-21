@@ -2,7 +2,7 @@
 # from scrapy.spiders import XMLFeedSpider
 import scrapy
 
-from dauphin.items import RssItem
+from dauphin.items import RssItem, RssChannel
 
 
 class UpaSpider(scrapy.Spider):
@@ -12,13 +12,30 @@ class UpaSpider(scrapy.Spider):
 
     def parse(self, response):
         filename = response.url.split("/")[-2] + '.html'
-        page_title = response.xpath('//title/text()').extract()[0]
-        print page_title
 
-        for sel in response.xpath('//article'):
+        # self.channel = self.parse_channel(response)
+
+        for sel in response.xpath('//article[@class="featured-box__wrapper cf"]'):
             item = RssItem()
-            item['title'] = sel.xpath('header/h2/a/text()').extract()
-            item['date'] = sel.xpath('header/p/time/@datetime').extract()
-            item['link'] = sel.xpath('header/h2/a/@href').extract()
-            # desc = sel.xpath('text()').extract()
+            item['title'] = sel.xpath('h1/text()')[0].extract()
+            item['pubDate'] = sel.xpath('p[@class="featured-box__meta"]/date/@datetime')[0].extract()
+            item['link'] = sel.xpath('p[@class="featured-box__cta"]/a/@href')[0].extract()
+            item['description'] = sel.xpath('div[@class="featured-box__content"]/p/text()')[0].extract()
             yield item
+
+        for sel in response.xpath('//article/header'):
+            item = RssItem()
+            item['title'] = sel.xpath('h2/a/text()')[0].extract()
+            item['pubDate'] = sel.xpath('p/time/@datetime')[0].extract()
+            item['link'] = sel.xpath('h2/a/@href')[0].extract()
+            yield item
+
+    def _parse_channel(self, response):
+
+        channel = RssChannel()
+        channel['title'] = response.xpath('//title/text()').extract()[0]
+        channel['description'] = "L'UPA est passé par là"
+        channel['link'] = self.start_urls[0]
+        # channel.lastBuildDate = now()
+
+        return channel

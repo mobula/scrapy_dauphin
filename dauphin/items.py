@@ -8,8 +8,18 @@
 import scrapy
 
 
+class RssChannel(scrapy.Item):
+	title = scrapy.Field()
+	link = scrapy.Field()
+	description = scrapy.Field()
+	generator = 'scrapy'
+	lastBuildDate = None
+
+
 class RssItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
-    # desc = scrapy.Field()
-    date = scrapy.Field()
+    description = scrapy.Field()
+    pubDate = scrapy.Field()
+    # author = scrapy.Field()
+    # category = scrapy.Field()
