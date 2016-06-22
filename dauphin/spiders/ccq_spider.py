@@ -16,7 +16,7 @@ class CcqSpider(scrapy.Spider):
         for sel in response.css('.news'):
             item = RssItem()
             item['title'] = sel.xpath('h3/a/text()').extract()
-            link = [''.join(self.rootURL+sel.xpath('h3/a/@href').extract())]
+            link = [''.join(self.root_url+sel.xpath('h3/a/@href').extract())]
             item['link'] = link
             item['date'] = sel.css('.nouvellesDate').xpath('text()').extract()
             yield item
