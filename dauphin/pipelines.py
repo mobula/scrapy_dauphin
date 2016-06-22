@@ -12,7 +12,6 @@ from .exporters import RssItemExporter
 class RssExportPipeline(object):
 
     def __init__(self):
-        print('RssExportPipeline')
         self.files = {}
 
     @classmethod
@@ -25,7 +24,7 @@ class RssExportPipeline(object):
     def spider_opened(self, spider):
         file = open('%s_feed.xml' % spider.name, 'w+b')
         self.files[spider] = file
-        self.exporter = RssItemExporter(file)
+        self.exporter = RssItemExporter(file, channel_title=spider.title, channel_link=spider.start_urls[0])
         self.exporter.start_exporting()
 
     def spider_closed(self, spider):
@@ -34,5 +33,6 @@ class RssExportPipeline(object):
         file.close()
 
     def process_item(self, item, spider):
+        print('PROCESSING ITEM')
         self.exporter.export_item(item)
         return item
