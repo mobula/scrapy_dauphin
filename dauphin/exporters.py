@@ -16,7 +16,7 @@ class RssItemExporter(XmlItemExporter):
 
     def start_exporting(self):
         self.xg.startDocument()
-        self.xg.startElement(self.rss_element, {})
+        self.xg.startElement(self.rss_element, {'version':'2.0'})
         self.xg.startElement(self.channel_element, {})
         self._export_xml_field('title', self.channel_title)
         self._export_xml_field('link', self.channel_link)
