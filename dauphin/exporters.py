@@ -6,6 +6,7 @@ from scrapy.exporters import XmlItemExporter
 class RssItemExporter(XmlItemExporter):
 
     def __init__(self, file, *args, **kwargs):
+        # TODO: ajouter attribut  version="2.0" à balise rss sinon affichera juste l'arbre
         self.rss_element = 'rss'
         self.channel_element = 'channel'
         self.channel_title = kwargs.pop('channel_title', None)
