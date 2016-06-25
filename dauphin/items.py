@@ -11,6 +11,7 @@ import scrapy
 class RssItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
+    guid = scrapy.Field()
     description = scrapy.Field()
     pubDate = scrapy.Field()
     # author = scrapy.Field()

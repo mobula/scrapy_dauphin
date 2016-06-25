@@ -17,14 +17,11 @@ class MLStripper(HTMLParser):
         return ''.join(self.fed)
 
 def strip_tags(html):
-    print 'TYPE:',type(html)
     html = html.encode('utf8')
-    #parser = HTMLParser()
-    #html = parser.unescape(html)
     s = MLStripper()
     s.feed(html)
     return unicode(s.get_data(), 'utf-8')
-    
+
 
 class CcqSpider(scrapy.Spider):
     name = "ccq"
@@ -32,15 +29,18 @@ class CcqSpider(scrapy.Spider):
     start_urls = ["http://www.ccq.org/fr-CA/nouvelles?profil=GrandPublic"]
     root_url = "http://www.ccq.org"
     title = "Nouvelles CCQ"
+    description = "Mises à jour de la Comission de la Construction du Québec"
 
     def parse(self, response):
-    
+
         for sel in response.css('.news'):
             item = RssItem()
             item['title'] = sel.xpath('h3/a/text()')[0].extract()
-            link = self.root_url+sel.xpath('h3/a/@href')[0].extract()
+            link = self.root_url + sel.xpath('h3/a/@href')[0].extract()
             item['link'] = link
+            item['guid'] = link
             item['description'] = strip_tags(sel.xpath('div[@class="summary"]')[0].extract())
+            # TODO: RFC-822 date-time
             item['pubDate'] = sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract()
             yield item
 
