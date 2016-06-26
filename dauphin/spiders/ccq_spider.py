@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
 from dauphin.items import RssItem
 from HTMLParser import HTMLParser
 
@@ -9,10 +8,13 @@ class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
         self.fed = []
+        
     def handle_data(self, d):
         self.fed.append(d)
+        
     def handle_charref(self, name):
         self.handle_data(self.unescape('&#{};'.format(name)))
+        
     def get_data(self):
         return ''.join(self.fed)
 
