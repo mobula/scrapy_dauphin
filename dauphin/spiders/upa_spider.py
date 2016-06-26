@@ -27,3 +27,4 @@ class UpaSpider(scrapy.Spider):
             item['pubDate'] = sel.xpath('p/time/@datetime')[0].extract()
             item['link'] = sel.xpath('h2/a/@href')[0].extract()
             yield item
+

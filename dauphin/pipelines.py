@@ -24,7 +24,10 @@ class RssExportPipeline(object):
     def spider_opened(self, spider):
         file = open('%s_feed.xml' % spider.name, 'w+b')
         self.files[spider] = file
-        self.exporter = RssItemExporter(file, channel_title=spider.title, channel_link=spider.start_urls[0])
+        # TODO: add feed root url to channel_atom_link
+        self.exporter = RssItemExporter(file, channel_title=spider.title, \
+        channel_link=spider.start_urls[0], channel_description=spider.description, \
+        channel_atom_link=spider.name+'_feed.xml')
         self.exporter.start_exporting()
 
     def spider_closed(self, spider):
