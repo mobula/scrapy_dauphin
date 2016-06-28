@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+import datetime
+import locale
 import scrapy
-from dauphin.items import RssItem
+
 from HTMLParser import HTMLParser
+
+from dauphin.items import RssItem
 
 
 class MLStripper(HTMLParser):
@@ -18,11 +22,22 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return ''.join(self.fed)
 
+
 def strip_tags(html):
     html = html.encode('utf8')
     s = MLStripper()
     s.feed(html)
     return unicode(s.get_data(), 'utf-8')
+
+
+def convert_date(datestr):
+    loc = locale.getlocale() # store current locale
+    locale.setlocale(locale.LC_ALL, 'fr_CA')
+    d = datetime.datetime.strptime(datestr, '%d %B %Y')
+    locale.setlocale(locale.LC_ALL, 'C')
+    output = d.strftime('%a, %d %b %Y %H:%M:%S EST')
+    locale.setlocale(locale.LC_ALL, loc)
+    return output
 
 
 class CcqSpider(scrapy.Spider):
@@ -31,7 +46,7 @@ class CcqSpider(scrapy.Spider):
     start_urls = ["http://www.ccq.org/fr-CA/nouvelles?profil=GrandPublic"]
     root_url = "http://www.ccq.org"
     title = "Nouvelles CCQ"
-    description = "Mises à jour de la Comission de la Construction du Québec"
+    description = "Mises à jour de la Commission de la Construction du Québec"
 
     def parse(self, response):
 
@@ -42,7 +57,5 @@ class CcqSpider(scrapy.Spider):
             item['link'] = link
             item['guid'] = link
             item['description'] = strip_tags(sel.xpath('div[@class="summary"]')[0].extract())
-            # TODO: RFC-822 date-time
-            item['pubDate'] = sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract()
+            item['pubDate'] = convert_date(sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract())
             yield item
-
