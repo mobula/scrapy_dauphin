@@ -29,11 +29,15 @@ def strip_tags(html):
     s.feed(html)
     return unicode(s.get_data(), 'utf-8')
 
+
 def convert_date(datestr):
     loc = locale.getlocale() # store current locale
     locale.setlocale(locale.LC_ALL, 'fr_CA')
-    return datetime.datetime.strptime(datestr, '%d %B %Y').strftime('%Y-%m-%dT%H:%m:%SZ')
+    d = datetime.datetime.strptime(datestr, '%d %B %Y')
+    locale.setlocale(locale.LC_ALL, 'C')
+    output = d.strftime('%a, %d %b %Y %H:%M:%S EST')
     locale.setlocale(locale.LC_ALL, loc)
+    return output
 
 
 class CcqSpider(scrapy.Spider):
@@ -53,8 +57,5 @@ class CcqSpider(scrapy.Spider):
             item['link'] = link
             item['guid'] = link
             item['description'] = strip_tags(sel.xpath('div[@class="summary"]')[0].extract())
-            # item['description'] = sel.xpath('div[@class="summary"]/text()')[0].extract()
-            # print(etree.tostring(sel.xpath('div[@class="summary"]')[0].extract(), encoding='utf8', method='text')
-            # TODO: RFC-822 date-time
             item['pubDate'] = convert_date(sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract())
             yield item
