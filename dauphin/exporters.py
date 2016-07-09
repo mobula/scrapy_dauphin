@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
 import time
+
+from scrapy.conf import settings
 from scrapy.exporters import XmlItemExporter
-
-
-DATETIME_FORMAT_ATOM = '%Y-%m-%dT%H:%m:%SZ'
-DATETIME_FORMAT_RSS = '%a, %d %b %Y %H:%M:%S %z'
 
 
 class RssItemExporter(XmlItemExporter):
 
-    def __init__(self, file, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.rss_element = 'rss'
         self.channel_element = 'channel'
+
         self.channel_title = kwargs.pop('channel_title', None)
         self.channel_link = kwargs.pop('channel_link', None)
         self.channel_description = kwargs.pop('channel_description', None)
         self.channel_atom_link = kwargs.pop('channel_atom_link', None)
 
-        super(RssItemExporter, self).__init__(file, **kwargs)
+        self.datetime_format = settings.get('RSS_DATETIME_FORMAT')
+
+        super(RssItemExporter, self).__init__(*args, **kwargs)
 
     def start_exporting(self):
         self.xg.startDocument()
@@ -29,8 +30,8 @@ class RssItemExporter(XmlItemExporter):
         self._export_xml_field('title', self.channel_title)
         self._export_xml_field('link', self.channel_link)
         self._export_xml_field('description', self.channel_description)
-        self._export_xml_field('lastBuildDate', time.strftime(DATETIME_FORMAT_RSS, time.localtime()))
-        self._export_xml_field('pubDate', time.strftime(DATETIME_FORMAT_RSS, time.localtime()))
+        self._export_xml_field('lastBuildDate', time.strftime(self.datetime_format, time.localtime()))
+        self._export_xml_field('pubDate', time.strftime(self.datetime_format, time.localtime()))
         self._export_xml_field('generator', 'scrapy')
 
     def finish_exporting(self):

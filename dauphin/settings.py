@@ -21,6 +21,24 @@ NEWSPIDER_MODULE = 'dauphin.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+# S3 credentials (dauphin)
+# AWS_ACCESS_KEY_ID = # os.environ...
+# AWS_SECRET_ACCESS_KEY = # os.environ
+
+AWS_BUCKET_NAME = 'dauphin-rss'
+# AWS_BUCKET_LINK = 'dauphin-rss.s3-website-us-east-1.amazonaws.com'
+
+FEED_URI = 's3://dauphin-rss/feeds/%(name)s.xml'
+
+FEED_EXPORTERS = {
+    'rss': 'dauphin.exporters.RssItemExporter',
+    # 'atom': 'dauphin.exporters.AtomItemExporter',
+}
+
+ATOM_DATETIME_FORMAT = '%Y-%m-%dT%H:%m:%SZ'
+RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
+
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
