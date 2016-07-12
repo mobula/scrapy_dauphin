@@ -11,10 +11,11 @@ class RssItemExporter(XmlItemExporter):
         self.rss_element = 'rss'
         self.channel_element = 'channel'
 
-        self.channel_title = kwargs.pop('channel_title', None)
-        self.channel_link = kwargs.pop('channel_link', None)
-        self.channel_description = kwargs.pop('channel_description', None)
-        self.channel_atom_link = kwargs.pop('channel_atom_link', None)
+        extra = kwargs.pop('extra', {})
+        self.channel_title = extra.pop('channel_title', None)
+        self.channel_link = extra.pop('channel_link', None)
+        self.channel_description = extra.pop('channel_description', None)
+        self.channel_atom_link = extra.pop('channel_atom_link', None)
 
         self.datetime_format = settings.get('RSS_DATETIME_FORMAT')
 
@@ -26,7 +27,9 @@ class RssItemExporter(XmlItemExporter):
         self.xg.startElement(self.channel_element, {})
         # TODO: export as self-closing tag + add attr.
         # https://validator.w3.org/feed/docs/warning/MissingAtomSelfLink.html
-        # self._export_xml_field('atom:link', self.channel_atom_link)
+        # self.xg.startElement('atom:link', { rel: "self", type: "application/rss+xml"})
+        # self._xg_characters(str(self.channel_atom_link))
+        # self.xg.endElement('atom:link')
         self._export_xml_field('title', self.channel_title)
         self._export_xml_field('link', self.channel_link)
         self._export_xml_field('description', self.channel_description)
