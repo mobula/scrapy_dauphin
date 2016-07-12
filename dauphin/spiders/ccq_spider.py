@@ -30,16 +30,6 @@ def strip_tags(html):
     return unicode(s.get_data(), 'utf-8')
 
 
-def convert_date(datestr):
-    loc = locale.getlocale() # store current locale
-    locale.setlocale(locale.LC_ALL, 'fr_CA')
-    d = datetime.datetime.strptime(datestr, '%d %B %Y')
-    locale.setlocale(locale.LC_ALL, 'C')
-    output = d.strftime('%a, %d %b %Y %H:%M:%S EST')
-    locale.setlocale(locale.LC_ALL, loc)
-    return output
-
-
 class CcqSpider(scrapy.Spider):
     name = "ccq"
     allowed_domains = ["ccq.org"]
@@ -47,6 +37,7 @@ class CcqSpider(scrapy.Spider):
     root_url = "http://www.ccq.org"
     title = "Nouvelles CCQ"
     description = "Mises à jour de la Commission de la Construction du Québec"
+    rss_datetime_format = '%a, %d %b %Y %H:%M:%S EST'
 
     def parse(self, response):
 
@@ -57,5 +48,15 @@ class CcqSpider(scrapy.Spider):
             item['link'] = link
             item['guid'] = link
             item['description'] = strip_tags(sel.xpath('div[@class="summary"]')[0].extract())
-            item['pubDate'] = convert_date(sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract())
+            item['pubDate'] = self._to_rss_date(sel.xpath('div[@class="nouvellesDate"]/text()')[0].extract())
             yield item
+
+    def _to_rss_date(self, datestr):
+        loc = locale.getlocale() # store current locale
+        locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+        d = datetime.datetime.strptime(datestr, '%d %B %Y')
+        locale.setlocale(locale.LC_ALL, 'C')
+        output = d.strftime(self.rss_datetime_format)
+        locale.setlocale(locale.LC_ALL, loc)
+        return output
+
