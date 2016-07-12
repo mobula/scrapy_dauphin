@@ -14,6 +14,12 @@ BOT_NAME = 'dauphin'
 SPIDER_MODULES = ['dauphin.spiders']
 NEWSPIDER_MODULE = 'dauphin.spiders'
 
+# Logging
+# LOG_ENABLED = True
+# LOG_FILE = 'rss.log'
+# LOG_LEVEL = 'ERROR'
+# LOG_STDOUT = True
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'dauphin (+http://www.yourdomain.com)'
@@ -21,23 +27,27 @@ NEWSPIDER_MODULE = 'dauphin.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
+ATOM_DATETIME_FORMAT = '%Y-%m-%dT%H:%m:%SZ'
+FEED_DATETIME_FORMAT = RSS_DATETIME_FORMAT
+
+
 # S3 credentials (dauphin)
 # AWS_ACCESS_KEY_ID = # os.environ...
 # AWS_SECRET_ACCESS_KEY = # os.environ
+AWS_USERNAME = 'dauphin'
+AWS_S3_BUCKET = 'dauphin-rss'
 
-AWS_BUCKET_NAME = 'dauphin-rss'
-# AWS_BUCKET_LINK = 'dauphin-rss.s3-website-us-east-1.amazonaws.com'
+# FEED_URI = 'file:///Volumes/Data/Development/code/python/scrapy/dauphin/feeds/%(name)s.rss'
+FEED_URI = 's3://dauphin-rss/feeds/%(name)s.rss'
+FEED_FORMAT = 'rss'
+# FEED_PUBLIC_URI = 'dauphin-rss.s3-website-us-east-1.amazonaws.com/feed/%(name)s.rss'
 
-FEED_URI = 's3://dauphin-rss/feeds/%(name)s.xml'
 
 FEED_EXPORTERS = {
     'rss': 'dauphin.exporters.RssItemExporter',
     # 'atom': 'dauphin.exporters.AtomItemExporter',
 }
-
-ATOM_DATETIME_FORMAT = '%Y-%m-%dT%H:%m:%SZ'
-RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
-
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -45,9 +55,9 @@ RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 2
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -57,10 +67,10 @@ RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
+DEFAULT_REQUEST_HEADERS = {
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+  'Accept-Language': 'fr',
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
@@ -76,15 +86,23 @@ RSS_DATETIME_FORMAT = '%a, %d %b %Y %H:%M:%S %z'
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+    'scrapy.extensions.feedexport.FeedExporter': None,
+    'dauphin.feedexport.FeedExporter': 0,
+    # 'scrapy_dotpersistence.DotScrapyPersistence': 0,
+}
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-   'dauphin.pipelines.RssExportPipeline': 300,
-}
+# ITEM_PIPELINES = {
+# }
+
+# DOTSCRAPY_ENABLED = True
+# ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+# ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+# ADDONS_AWS_USERNAME = AWS_USERNAME
+# ADDONS_S3_BUCKET = AWS_S3_BUCKET
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
