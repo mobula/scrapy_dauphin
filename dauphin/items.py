@@ -14,5 +14,5 @@ class RssItem(scrapy.Item):
     guid = scrapy.Field()
     description = scrapy.Field()
     pubDate = scrapy.Field()
+    category = scrapy.Field()
     # author = scrapy.Field()
-    # category = scrapy.Field()
